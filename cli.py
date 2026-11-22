@@ -2,15 +2,13 @@ import sys
 import storage
 import logic
 
-FILE = "data.txt"
-
 def main():
     if len(sys.argv) < 2:
         print("Потрібно вибрати функцію: add, list, find або report")
         return
 
     command = sys.argv[1]
-    records = storage.load(FILE)
+    records = storage.load()
 
     if command == "add":
         if len(sys.argv) != 7:
@@ -39,7 +37,7 @@ def main():
         }
 
         logic.add_payment(records, payment)
-        storage.save(FILE, records)
+        storage.add(payment)
         print("Платіж додано")
 
     elif command == "list":
@@ -142,13 +140,15 @@ def main():
             print("Помилка: такого номера платежу немає")
             return
 
-        logic.update_payment(records, number, {field: value})
-        storage.save(FILE, records)
-        print("Платіж оновлено")
+        payment_id = records[number - 1]["id"]
+
+        if storage.update_payment(payment_id, field, value):
+            print("Платіж оновлено")
+        else:
+            print("Не вдалося оновити платіж")
         
     else:
         print("Невідома команда:", command)
-
 
 if __name__ == "__main__":
     main()
